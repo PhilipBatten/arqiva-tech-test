@@ -19,9 +19,9 @@ app = Flask(__name__)
 # Initialize DynamoDB client with environment variables
 dynamodb = boto3.resource(
     'dynamodb',
-    endpoint_url=os.getenv('AWS_ENDPOINT_URL', None),  # None will use default AWS endpoint
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID', None),  # None will use default credentials
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY', None),  # None will use default credentials
+    endpoint_url=os.getenv('LOCAL_AWS_ENDPOINT_URL', None),  # None will use default AWS endpoint
+    aws_access_key_id=os.getenv('LOCAL_AWS_ACCESS_KEY_ID', None),  # None will use default credentials
+    aws_secret_access_key=os.getenv('LOCAL_AWS_SECRET_ACCESS_KEY', None),  # None will use default credentials
     region_name='eu-west-2'
 )
 
