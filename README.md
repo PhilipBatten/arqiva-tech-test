@@ -41,3 +41,10 @@ Use the document to explore some of the architectural factors you may face when 
 - Third setup IaC to deploy the solution
 
 # Technology choices
+- Python flask to enable multiple endpoints in a single deployment
+- AWS Lambda to run the application code
+- AWS Api Gateway to give the lambda a public url
+- AWS MemoryDB for storing the dynamic value
+- Docker for local development
+- AWS ECR for docker image storage
+
