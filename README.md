@@ -26,3 +26,18 @@ How you would embellish the solution were you to have more time.
 Use the document to explore some of the architectural factors you may face when designing and building a cloud based solution. Also, the pros and cons of the design decisions you needed to make - and, if you had more time, how you would adapt your solution.
 ```
 
+# Thought process before starting
+- An endpoint is needed to serve some html
+    - Dynamic value pulled from a data store
+        - DynamoDB
+        - Redis
+        - RDS
+- An mechanism to update a value is required
+    - Direct DB access?
+    - Environment Variable?
+    - Endpoint is easiest to use
+- First set up a local environment that has the technologies I select
+- Second add the endpoints to get the html and set the dynamic value
+- Third setup IaC to deploy the solution
+
+# Technology choices
