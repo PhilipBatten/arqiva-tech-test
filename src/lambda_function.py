@@ -1,45 +1,53 @@
 from flask import Flask, request
 from markupsafe import escape
-import redis
+import boto3
 import os
 import json
 import logging
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 
 # Configure logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
 
-# Initialize Redis client with environment variables
-redis_client = redis.Redis(
-    host=os.getenv('MEMORYDB_HOST', 'localhost'),
-    port=int(os.getenv('MEMORYDB_PORT', 6379)),
-    password=os.getenv('MEMORYDB_PASSWORD', None),
-    decode_responses=True  # This ensures we get strings back instead of bytes
+# Initialize DynamoDB client with environment variables
+dynamodb = boto3.resource(
+    'dynamodb',
+    endpoint_url=os.getenv('AWS_ENDPOINT_URL', None),  # None will use default AWS endpoint
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID', None),  # None will use default credentials
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY', None),  # None will use default credentials
+    region_name='eu-west-2'
 )
 
-KEY_NAME = 'dynamic_string'
+TABLE_NAME = os.getenv('DYNAMODB_TABLE', 'app-table')
+table = dynamodb.Table(TABLE_NAME)
 
-def get_text_from_redis():
+def get_text_from_dynamodb():
     try:
-        text = redis_client.get(KEY_NAME)
-        return text if text else 'dynamic string'
-    except redis.RedisError as e:
-        logger.error(f"Redis error: {str(e)}")
+        response = table.get_item(Key={'id': 'main'})
+        return response['Item']['text']
+    except (ClientError, KeyError):
+        # If the item doesn't exist, return default value
         return 'dynamic string'
 
-def save_text_to_redis(text):
-    try:
-        redis_client.set(KEY_NAME, text)
-    except redis.RedisError as e:
-        logger.error(f"Redis error: {str(e)}")
-        raise
+def save_text_to_dynamodb(text):
+    table.put_item(
+        Item={
+            'id': 'main',
+            'text': text
+        }
+    )
 
 @app.route('/text', methods=['GET'])
 def get_text():
-    # Get text from Redis
-    text = get_text_from_redis()
+    # Get text from DynamoDB
+    text = get_text_from_dynamodb()
     
     # Create HTML response with escaped text
     html_response = f'<h1>The saved string is {escape(text)}</h1>'
@@ -57,12 +65,10 @@ def update_text():
     if len(text) > 256:
         return 'Text exceeds maximum length of 256 characters', 400
     
-    # Save text to Redis
-    try:
-        save_text_to_redis(text)
-        return f'Text updated to: {text}', 200
-    except redis.RedisError:
-        return 'Error saving text', 500
+    # Save text to DynamoDB
+    save_text_to_dynamodb(text)
+    
+    return f'Text updated to: {text}', 200
 
 def lambda_handler(event, context):
     """AWS Lambda handler for API Gateway events"""
@@ -76,7 +82,7 @@ def lambda_handler(event, context):
         return app(event, context)
     except Exception as e:
         logger.error(f"Error handling request: {str(e)}")
-        return {
+    return {
             'statusCode': 500,
             'body': json.dumps({'error': 'Internal server error'})
-        } 
+    } 

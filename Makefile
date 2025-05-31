@@ -14,6 +14,9 @@ run:
 	docker compose build
 	docker compose up -d
 	@echo "Waiting for services to be ready..."
+	sleep 5
+	@echo "Initializing dynamodb table..."
+	docker compose exec app python setup_localstack.py
 
 stop:
 	@echo "Stopping services..."

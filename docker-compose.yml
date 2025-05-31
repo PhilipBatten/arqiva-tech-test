@@ -1,9 +1,14 @@
 services:
-  valkey:
-    image: valkey/valkey:latest
+  localstack:
+    image: localstack/localstack:latest
     ports:
-      - "6379:6379"
-    command: --port 6379
+      - "4566:4566"
+    environment:
+      - SERVICES=dynamodb
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
   app:
     build:
@@ -11,9 +16,12 @@ services:
       dockerfile: Dockerfile
       target: local
     environment:
-      - MEMORYDB_HOST=valkey
-      - MEMORYDB_PORT=6379
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=eu-west-2
+      - DYNAMODB_TABLE_NAME=app-table
     depends_on:
-      - valkey
+      - localstack 
     ports:
       - "5000:5000"

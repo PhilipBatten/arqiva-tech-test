@@ -50,7 +50,7 @@ Use the document to explore some of the architectural factors you may face when 
 
 # Local development setup
 - docker-compose 
-    - valkey
+    - localstack for dynamodb
     - app
 - Dockerfile
     - multi stage
@@ -63,3 +63,6 @@ Use the document to explore some of the architectural factors you may face when 
 ```
 # make run // starts the app container and valkey
 ```
+
+# Changes
+- While writing the terraform I realised to use memorydb it would require a vpc, so to simplify the setup I switched to using dynamodb

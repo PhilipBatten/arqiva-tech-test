@@ -16,5 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/lambda_function.py .
 COPY src/app.py .
+COPY setup_localstack.py .
 
 CMD [ "python", "app.py" ]
