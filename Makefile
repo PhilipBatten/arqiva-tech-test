@@ -32,7 +32,7 @@ clean: stop
 	docker compose down -v
 	rm -rf ./volume
 
-deploy: provision-ecr deploy-image provision-infra
+deploy-app: provision-ecr deploy-image provision-infra
 
 provision-ecr:
 	@echo "Provisioning ECR repository..."
