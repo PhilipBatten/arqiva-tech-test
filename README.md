@@ -66,3 +66,18 @@ Use the document to explore some of the architectural factors you may face when 
 
 # Changes
 - While writing the terraform I realised to use memorydb it would require a vpc, so to simplify the setup I switched to using dynamodb
+
+# Terraform
+- I have split the terraform for the ecr into its own module so it can be provisioned first
+- The image can then be pushed to the registry
+- The rest of the infra can then be provisioned
+    - This will result in a uri being output
+```
+make deploy // runs the following 3 commands
+
+make provision-ecr
+make deploy-image
+make provision-infra
+
+make destroy-infra
+```
