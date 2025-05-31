@@ -48,3 +48,18 @@ Use the document to explore some of the architectural factors you may face when 
 - Docker for local development
 - AWS ECR for docker image storage
 
+# Local development setup
+- docker-compose 
+    - valkey
+    - app
+- Dockerfile
+    - multi stage
+        - local stage for running flask normally
+        - lambda stage for running in AWS
+- basic application setup that achieves the requirements
+    - serve h1 tag with dynamic value
+    - set dynamic value via a put in postman/curl
+
+```
+# make run // starts the app container and valkey
+```

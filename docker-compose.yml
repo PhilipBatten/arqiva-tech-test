@@ -1,0 +1,19 @@
+services:
+  valkey:
+    image: valkey/valkey:latest
+    ports:
+      - "6379:6379"
+    command: --port 6379
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: local
+    environment:
+      - MEMORYDB_HOST=valkey
+      - MEMORYDB_PORT=6379
+    depends_on:
+      - valkey
+    ports:
+      - "5000:5000"
