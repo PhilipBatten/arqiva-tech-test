@@ -1,4 +1,4 @@
-.PHONY: run stop clean provision-ecr deploy-image provision-infra
+.PHONY: run stop clean provision-ecr deploy-image provision-infra lint lint-fix test
 
 # Variables
 VALUE ?= dynamic string
@@ -13,6 +13,9 @@ help:
 	@echo "  make provision-ecr  - Provision ECR repository using Terraform"
 	@echo "  make deploy-image   - Build and deploy container image to ECR"
 	@echo "  make provision-infra - Provision all infrastructure except ECR"
+	@echo "  make lint           - Run pylint and black check"
+	@echo "  make lint-fix       - Run black to fix formatting issues"
+	@echo "  make test           - Run unit tests"
 
 run:
 	@echo "Building and starting application and LocalStack..."
@@ -52,3 +55,11 @@ destroy-infra:
 	aws ecr delete-repository --repository-name lambda-container --force
 	cd terraform && terraform destroy -auto-approve
 	@echo "Infrastructure destroyed successfully!"
+
+lint: build
+	@echo "Running pylint..."
+	docker compose run --rm app pylint app.py repository.py local.py lambda.py
+
+build:
+	@echo "Building container..."	
+	docker compose build
