@@ -81,3 +81,17 @@ make provision-infra
 
 make destroy-infra
 ```
+
+# Improvements
+- If I had more time I would have used redis, or other simplier KV store, instead of dynamodb. Dynamodb is simpler to setup quickly due to it being fully managed.
+- I would add a github workflow for the deployments. Merging to main would trigger a update of the lambda
+- I need to add a command to trigger a lambda update, currently the method is to tear the infra down and run deploy-infra again, or run lambda update manually after pushing the new image
+- Unit and integration tests should be added, they were omitted due to the simple nature of the application and the limited set of requirements
+- A HTML templating library could be used to better handle rendering, however this seems overkill to start with.
+
+# Architectural decisions
+- Using lambda to run the application is quick to setup and scales quickly, however their can be some latency with cold starts. EC2, ECS or Fargate could also be used to run the docker image.
+- Alternatively python could be run directly in lambda using the python runtime, however because I wanted docker locally for testing it seems reasonable to run the same image in both places.
+- I split the lambda handler out into its own module, as I did with the local entrypoint. If a change in deployment to a different architecture is needed application code would not need to change.
+- The repository module encapsulates the dynamodb implementation, switching this out to a different datastore would be trivial.
+- I used terraform as it allows IaC to be located in the same repository. Splitting out the ecr module allowed for a seemless provisioning process. With more time more modules could be split out, however for such a small application this is not needed.
