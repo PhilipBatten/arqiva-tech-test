@@ -88,6 +88,7 @@ make destroy-infra
 - I need to add a command to trigger a lambda update, currently the method is to tear the infra down and run deploy-infra again, or run lambda update manually after pushing the new image
 - Unit and integration tests should be added, they were omitted due to the simple nature of the application and the limited set of requirements
 - A HTML templating library could be used to better handle rendering, however this seems overkill to start with.
+- IAM permissions are very broad, they should be reduced to only what is required.
 
 # Architectural decisions
 - Using lambda to run the application is quick to setup and scales quickly, however their can be some latency with cold starts. EC2, ECS or Fargate could also be used to run the docker image.
